@@ -243,14 +243,17 @@ class rest
 
             $partes_url = explode('/', $url);
 
-            $this->controlar_acceso($url);
+            if ($method!=='OPTIONS') {
 
-            if ($partes_url[0] == $this->settings['prefijo_api_docs']) {
-                $this->mostrar_documentacion($url);
-            } else {
-                $recurso = $this->router->buscar_controlador($method, $url);
-                $this->logger->debug("Controlador encontrado {$recurso->archivo} :: {$recurso->accion} (".implode(',', $recurso->parametros).")");
-                $recurso->ejecutar_accion();
+                $this->controlar_acceso($url);
+
+                if ($partes_url[0] == $this->settings['prefijo_api_docs']) {
+                    $this->mostrar_documentacion($url);
+                } else {
+                    $recurso = $this->router->buscar_controlador($method, $url);
+                    $this->logger->debug("Controlador encontrado {$recurso->archivo} :: {$recurso->accion} (" . implode(',', $recurso->parametros) . ")");
+                    $recurso->ejecutar_accion();
+                }
             }
         } catch (rest_error_autenticacion $ex) {
             $ex->configurar_respuesta($this->response);
